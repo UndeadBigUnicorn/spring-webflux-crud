@@ -12,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +26,8 @@ public class User implements UserDetails {
     public User(String username, String password){
         this.username = username;
         this.password = password;
+        this.enabled = true;
+        this.roles = Arrays.asList(Role.ROLE_ADMIN);
     }
 
     @Indexed
@@ -57,7 +60,6 @@ public class User implements UserDetails {
         return "User{" +
                 "id='" + id + '\'' +
                 ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
                 ", enabled=" + enabled +
                 ", roles=" + roles +
                 '}';
