@@ -1,9 +1,10 @@
 package com.example.crud.handlers;
 
 import com.example.crud.model.ApiResponse;
-import com.example.crud.service.TokenProvider;
+import com.example.crud.security.PBKDF2Encoder;
+import com.example.crud.security.TokenProvider;
 import com.example.crud.model.AuthToken;
-import com.example.crud.model.LoginRequest;
+import com.example.crud.security.model.AuthRequest;
 import com.example.crud.model.User;
 import com.example.crud.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Component
 public class AuthHandler {
@@ -22,13 +22,13 @@ public class AuthHandler {
     private UserRepository userRepository;
 
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    private PBKDF2Encoder passwordEncoder;
 
     @Autowired
     private TokenProvider tokenProvider;
 
     public Mono<ServerResponse> login(ServerRequest request) {
-        Mono<LoginRequest> loginRequests = request.bodyToMono(LoginRequest.class);
+        Mono<AuthRequest> loginRequests = request.bodyToMono(AuthRequest.class);
         return loginRequests.flatMap(login -> userRepository.findByUsername(login.getUsername())
                 .flatMap(user -> {
                     if (passwordEncoder.matches(login.getPassword(), user.getPassword())) {

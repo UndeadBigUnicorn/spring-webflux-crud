@@ -20,9 +20,7 @@ public class CrudApplication {
 		return args -> {
 			userRepository.deleteAll()
 					.thenMany(Flux.just(
-							new User("Dhiraj", 23, 3456),
-							new User("Mike", 34, 3421),
-							new User("Hary", 21, 8974)
+							new User("danil", "12345")
 					)
 						.flatMap(userRepository::save))
 					.thenMany(userRepository.findAll())

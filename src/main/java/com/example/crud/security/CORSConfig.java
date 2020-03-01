@@ -1,4 +1,4 @@
-package com.example.crud.config;
+package com.example.crud.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.config.CorsRegistry;

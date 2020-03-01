@@ -1,8 +1,9 @@
-package com.example.crud.service;
+package com.example.crud.security;
 
-import com.example.crud.model.Role;
+import com.example.crud.security.model.Role;
 import com.example.crud.model.User;
 import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,10 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -22,6 +20,21 @@ import static com.example.crud.model.Constants.*;
 
 @Component
 public class TokenProvider implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    @Value("${springbootwebfluxjjwt.jjwt.secret}")
+    private String secret;
+
+    @Value("${springbootwebfluxjjwt.jjwt.expiration}")
+    private String expirationTime;
+
+    public Claims getAllClaimsFromToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(Base64.getEncoder().encodeToString(secret.getBytes()))
+                .parseClaimsJws(token)
+                .getBody();
+    }
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -36,33 +49,30 @@ public class TokenProvider implements Serializable {
         return claimsResolver.apply(claims);
     }
 
-    Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(SIGNING_KEY)
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = getUsernameFromToken(token);
-        return (
-                username.equals(userDetails.getUsername())
-                        && !isTokenExpired(token));
+//    public Boolean validateToken(String token, UserDetails userDetails) {
+//        final String username = getUsernameFromToken(token);
+//        return (
+//                username.equals(userDetails.getUsername())
+//                        && !isTokenExpired(token));
+//    }
+
+    public Boolean validateToken(String token) {
+        return !isTokenExpired(token);
     }
 
     public String generateToken(User user) {
         final List<String> authorities = user.getRoles().stream()
-                .map(Role::getName)
+                .map(Role::name)
                 .collect(Collectors.toList());
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .claim(AUTHORITIES_KEY, authorities)
-                .signWith(SignatureAlgorithm.HS256, SIGNING_KEY)
+                .signWith(SignatureAlgorithm.HS512, Base64.getEncoder().encodeToString(secret.getBytes()))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY_SECONDS*1000))
                 .compact();

@@ -1,4 +1,4 @@
-package com.example.crud.service;
+package com.example.crud.security;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +25,12 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
     private AuthenticationManager authenticationManager;
 
     @Override
-    public Mono save(ServerWebExchange swe, SecurityContext sc) {
+    public Mono<Void> save(ServerWebExchange swe, SecurityContext sc) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Mono load(ServerWebExchange swe) {
+    public Mono<SecurityContext> load(ServerWebExchange swe) {
         ServerHttpRequest request = swe.getRequest();
         String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         String authToken = null;
@@ -41,7 +41,8 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
         }
         if (authToken != null) {
             Authentication auth = new UsernamePasswordAuthenticationToken(authToken, authToken);
-            return this.authenticationManager.authenticate(auth).map((authentication) -> new SecurityContextImpl((Authentication) authentication));
+            return this.authenticationManager.authenticate(auth)
+                    .map(SecurityContextImpl::new);
         } else {
             return Mono.empty();
         }
