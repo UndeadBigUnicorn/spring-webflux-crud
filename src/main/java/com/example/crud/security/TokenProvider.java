@@ -31,7 +31,7 @@ public class TokenProvider implements Serializable {
 
     public Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
-                .setSigningKey(Base64.getEncoder().encodeToString(secret.getBytes()))
+                .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody();
     }
@@ -54,13 +54,6 @@ public class TokenProvider implements Serializable {
         return expiration.before(new Date());
     }
 
-//    public Boolean validateToken(String token, UserDetails userDetails) {
-//        final String username = getUsernameFromToken(token);
-//        return (
-//                username.equals(userDetails.getUsername())
-//                        && !isTokenExpired(token));
-//    }
-
     public Boolean validateToken(String token) {
         return !isTokenExpired(token);
     }
@@ -72,7 +65,7 @@ public class TokenProvider implements Serializable {
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .claim(AUTHORITIES_KEY, authorities)
-                .signWith(SignatureAlgorithm.HS512, Base64.getEncoder().encodeToString(secret.getBytes()))
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY_SECONDS*1000))
                 .compact();

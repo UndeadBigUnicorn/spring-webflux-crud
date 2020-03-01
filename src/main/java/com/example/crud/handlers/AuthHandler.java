@@ -1,7 +1,6 @@
 package com.example.crud.handlers;
 
 import com.example.crud.model.ApiResponse;
-import com.example.crud.security.PBKDF2Encoder;
 import com.example.crud.security.TokenProvider;
 import com.example.crud.model.AuthToken;
 import com.example.crud.security.model.AuthRequest;
@@ -9,6 +8,7 @@ import com.example.crud.model.User;
 import com.example.crud.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -22,7 +22,7 @@ public class AuthHandler {
     private UserRepository userRepository;
 
     @Autowired
-    private PBKDF2Encoder passwordEncoder;
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
     private TokenProvider tokenProvider;

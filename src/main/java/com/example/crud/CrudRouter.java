@@ -2,8 +2,6 @@ package com.example.crud;
 
 import com.example.crud.handlers.AuthHandler;
 import com.example.crud.handlers.UserHandler;
-import com.example.crud.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
