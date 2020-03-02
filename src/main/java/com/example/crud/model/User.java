@@ -3,8 +3,7 @@ package com.example.crud.model;
 import com.example.crud.security.model.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -18,6 +17,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Document
+@Data
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
 
     @Id
@@ -31,38 +34,18 @@ public class User implements UserDetails {
     }
 
     @Indexed
+    @Setter
     private String username;
     private String password;
 
     @Getter @Setter
     private Boolean enabled;
-
+    @Getter @Setter
     private List<Role> roles;
 
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
-
-    public List<Role> getRoles() {
-        return roles;
-    }
-
+    @Override
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id='" + id + '\'' +
-                ", username='" + username + '\'' +
-                ", enabled=" + enabled +
-                ", roles=" + roles +
-                '}';
     }
 
     @Override

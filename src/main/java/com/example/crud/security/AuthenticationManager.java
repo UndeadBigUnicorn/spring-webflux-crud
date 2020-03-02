@@ -3,6 +3,7 @@ package com.example.crud.security;
 import com.example.crud.security.model.Role;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,13 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.example.crud.model.Constants.AUTHORITIES_KEY;
-
 @Component
 public class AuthenticationManager implements ReactiveAuthenticationManager {
 
     @Autowired
     private TokenProvider tokenProvider;
+
+    @Value("${jjwt.authority_key}")
+    private String AUTHORITIES_KEY;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -32,7 +34,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
         } catch (Exception e) {
             username = null;
         }
-        if (username != null && ! tokenProvider.validateToken(authToken)) {
+        if (username != null && tokenProvider.validateToken(authToken)) {
             Claims claims = tokenProvider.getAllClaimsFromToken(authToken);
 
             List<String> rolesMap = claims.get(AUTHORITIES_KEY, List.class);
@@ -51,5 +53,6 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
         } else {
             return Mono.empty();
         }
+
     }
 }

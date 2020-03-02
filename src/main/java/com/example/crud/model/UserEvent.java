@@ -1,20 +1,17 @@
 package com.example.crud.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+@Data
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserEvent {
 
     private String eventId;
     private String eventType;
 
-    public UserEvent(String eventId, String eventType) {
-        this.eventId = eventId;
-        this.eventType = eventType;
-    }
-
-    @Override
-    public String toString() {
-        return "data:{" +
-                "eventId='" + eventId + '\'' +
-                ", eventType='" + eventType + '\'' +
-                '}';
-    }
 }
